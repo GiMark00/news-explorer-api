@@ -32,7 +32,7 @@ app.get('/crash-test', () => {
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
     name: Joi.string().required().min(2).max(30),
   }),
 }), createUser);
@@ -40,7 +40,7 @@ app.post('/signup', celebrate({
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 }), login);
 
