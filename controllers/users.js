@@ -5,34 +5,15 @@ const {
   NotFoundError, ConflictError, UnauthorizedError, BadRequestError,
 } = require('../middlewares/error');
 
-const { NODE_ENV, JWT_SECRET = 'super-secret-key' } = process.env;
+const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.getUser = (req, res, next) => {
-  const owner = req.user._id;
-  User.findById(owner)
-    .orFail(new Error('NotFound'))
-    .then((users) => {
-      res.send({ data: users });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные.');
-      } else if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователя нет в базе.');
-      }
-      next(err);
-    })
-    .catch(next);
-};
-
-// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res, next) => {
   const {
     name, email, password,
   } = req.body;
   const pattern = new RegExp(/^[A-Za-z0-9]{8,}$/);
   if (!pattern.test(password)) {
-    throw new BadRequestError('Пароль должен состоять из заглавных и строчных букв, цифр, не содержать пробелов и быть как минимум 8 символов в длину.');
+    throw new BadRequestError('Пароль не далжен быть пустым.');
   }
 
   bcrypt.hash(password, 10)
@@ -60,7 +41,6 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('password')
-    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Неправильно введена почта.');
@@ -74,6 +54,24 @@ module.exports.login = (req, res, next) => {
         }, NODE_ENV === 'production' ? JWT_SECRET : 'super-secret-key', { expiresIn: 3600 * 24 * 7 });
         return res.status(201).send({ message: `Токен: ${token}` });
       });
+    })
+    .catch(next);
+};
+
+module.exports.getUser = (req, res, next) => {
+  const owner = req.user._id;
+  User.findById(owner)
+    .orFail(new Error('NotFound'))
+    .then((users) => {
+      res.send({ data: users });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequestError('Переданы некорректные данные.');
+      } else if (err.message === 'NotFound') {
+        throw new NotFoundError('Пользователя нет в базе.');
+      }
+      next(err);
     })
     .catch(next);
 };

@@ -38,10 +38,10 @@ module.exports.deleteArticle = (req, res, next) => {
     .orFail(new Error('notValidId'))
     .then((article) => {
       const owner = article.owner._id.toString();
-      if (!article._id) {
-        throw new NotFoundError('Статьи нет в базе.');
-      } else if (currentUserId !== owner) {
+      if (currentUserId !== owner) {
         throw new ForbiddenError('Нельзя удалить чужую статью.');
+      } else if (!article._id) {
+        throw new NotFoundError('Статьи нет в базе.');
       } else {
         Article.deleteOne(article)
           .then(() => {

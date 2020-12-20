@@ -1,6 +1,10 @@
 const PostArticle = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { default: validator } = require('validator');
 const { getArticles, createArticle, deleteArticle } = require('../controllers/article');
+const auth = require('../middlewares/auth');
+
+PostArticle.use(auth);
 
 PostArticle.get('/articles', getArticles);
 PostArticle.post('/articles', celebrate({
@@ -10,8 +14,18 @@ PostArticle.post('/articles', celebrate({
     text: Joi.string().required(),
     date: Joi.string().required(),
     source: Joi.string().required(),
-    link: Joi.string().required().pattern(/https:\/\/\w+.\w+/),
-    image: Joi.string().required().pattern(/https:\/\/\w+.\w+/),
+    link: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Неправильно заполнено поле \'link\'.');
+    }),
+    image: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Неправильно заполнено поле \'image\'.');
+    }),
   }),
 }), createArticle);
 PostArticle.delete('/articles/:articleId', celebrate({
