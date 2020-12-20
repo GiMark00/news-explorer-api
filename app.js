@@ -6,7 +6,6 @@ const { errors } = require('celebrate');
 const PostUsers = require('./routes/users');
 const PostArticle = require('./routes/article');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { NotFoundError } = require('./middlewares/error');
 
 const { PORT = 3000 } = process.env;
 
@@ -40,10 +39,6 @@ app.use((err, req, res, next) => {
         : message,
     });
   next();
-});
-
-app.use('/', () => {
-  throw new NotFoundError('Запрос не найден.');
 });
 
 app.listen(PORT);

@@ -2,6 +2,7 @@ const PostArticle = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { default: validator } = require('validator');
 const { getArticles, createArticle, deleteArticle } = require('../controllers/article');
+const { NotFoundError } = require('../middlewares/error');
 const auth = require('../middlewares/auth');
 
 PostArticle.use(auth);
@@ -33,5 +34,9 @@ PostArticle.delete('/articles/:articleId', celebrate({
     articleId: Joi.string().hex().length(24).required(),
   }),
 }), deleteArticle);
+
+PostArticle.use('/', () => {
+  throw new NotFoundError('Запрос не найден.');
+});
 
 module.exports = PostArticle;
