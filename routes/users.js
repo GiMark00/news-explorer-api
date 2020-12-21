@@ -2,7 +2,6 @@ const PostUsers = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { getUser, createUser, login } = require('../controllers/users');
 const auth = require('../middlewares/auth');
-const { NotFoundError } = require('../middlewares/error');
 
 PostUsers.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -22,9 +21,5 @@ PostUsers.post('/signin', celebrate({
 PostUsers.use(auth);
 
 PostUsers.get('/users/me', getUser);
-
-PostUsers.use('/', () => {
-  throw new NotFoundError('Запрос не найден.');
-});
 
 module.exports = PostUsers;

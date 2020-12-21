@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  NotFoundError, ConflictError, UnauthorizedError, BadRequestError,
-} = require('../middlewares/error');
+const { NotFoundError } = require('../middlewares/errors/NotFoundError');
+const { ConflictError } = require('../middlewares/errors/ConflictError');
+const { UnauthorizedError } = require('../middlewares/errors/UnauthorizedError');
+const { BadRequestError } = require('../middlewares/errors/BadRequestError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -11,10 +12,6 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, email, password,
   } = req.body;
-  const pattern = new RegExp(/^[A-Za-z0-9]{8,}$/);
-  if (!pattern.test(password)) {
-    throw new BadRequestError('Пароль не далжен быть пустым.');
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({

@@ -3,15 +3,15 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const PostUsers = require('./routes/users');
-const PostArticle = require('./routes/article');
+const AllRoutes = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { NotFoundError } = require('./middlewares/errors/NotFoundError');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DATA_URL, NODE_ENV } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mydb', {
+mongoose.connect(NODE_ENV === 'production' ? DATA_URL : 'mongodb://localhost:27017/mydb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -21,8 +21,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(requestLogger);
 
-app.use('/', PostUsers);
-app.use('/', PostArticle);
+app.use('/', AllRoutes);
+app.use('/', () => {
+  throw new NotFoundError('Запрос не найден.');
+});
 
 app.use(errorLogger);
 

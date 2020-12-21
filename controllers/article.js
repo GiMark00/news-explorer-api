@@ -1,5 +1,7 @@
 const Article = require('../models/article');
-const { NotFoundError, ForbiddenError, BadRequestError } = require('../middlewares/error');
+const { NotFoundError } = require('../middlewares/errors/NotFoundError');
+const { BadRequestError } = require('../middlewares/errors/BadRequestError');
+const { ForbiddenError } = require('../middlewares/errors/ForbiddenError');
 
 module.exports.getArticles = (req, res, next) => {
   Article.find({ owner: req.user._id })
@@ -21,7 +23,17 @@ module.exports.createArticle = (req, res, next) => {
     keyword, title, text, date, source, link, image, owner: req.user._id,
   })
     .then((article) => {
-      res.send({ data: article });
+      res.send({
+        data: {
+          keyword: article.keyword,
+          title: article.title,
+          text: article.text,
+          date: article.date,
+          source: article.source,
+          link: article.link,
+          image: article.image,
+        },
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

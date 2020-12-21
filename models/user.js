@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    match: /\w+@\w+.\w+/i,
     unique: true,
   },
   password: {
@@ -13,7 +12,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
     hide: true,
-    match: /\w{10,}/i,
   },
   name: {
     type: String,
