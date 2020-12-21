@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const AllRoutes = require('./routes/index');
+const PostUsers = require('./routes/users');
+const PostArticle = require('./routes/article');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { NotFoundError } = require('./middlewares/errors/NotFoundError');
 
@@ -21,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(requestLogger);
 
-app.use('/', AllRoutes);
+app.use('/', PostUsers);
+app.use('/', PostArticle);
 app.use('/', () => {
   throw new NotFoundError('Запрос не найден.');
 });
