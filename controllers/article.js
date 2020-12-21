@@ -5,22 +5,11 @@ const { ForbiddenError } = require('../middlewares/errors/ForbiddenError');
 
 module.exports.getArticles = (req, res, next) => {
   Article.find({ owner: req.user._id })
-    .then((article) => {
-      if (!article.length) {
+    .then((articles) => {
+      if (!articles.length) {
         throw new NotFoundError('В базе нет статей.');
       }
-      res.send({
-        data: {
-          id: article._id,
-          keyword: article.keyword,
-          title: article.title,
-          text: article.text,
-          date: article.date,
-          source: article.source,
-          link: article.link,
-          image: article.image,
-        },
-      });
+      res.send({ data: articles });
     })
     .catch(next);
 };
