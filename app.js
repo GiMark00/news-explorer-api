@@ -7,21 +7,17 @@ const cors = require('cors');
 const AllRoutes = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const whitelist = [
-  'http://localhost:8080',
-  'https://api.goosenews.students.nomoreparties.space',
-];
-
 const corsOptions = {
-  origin(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'http://localhost:8080',
+    'https://goosenews.students.nomoreparties.space/',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   credentials: true,
-  allowHeaders: 'Content-Type',
+  allowHeaders: [
+    'Content-Type',
+    'origin',
+  ],
   optionsSuccessStatus: 200,
 };
 
